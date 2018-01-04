@@ -101,7 +101,8 @@ namespace Delivery
 
     public class Bypass : ServicedComponent
     {
-        public Bypass() { //Console.WriteLine("I am a basic COM Object"); }
+        public Bypass() { //Console.WriteLine("I am a basic COM Object"); 
+	}
 
         [ComRegisterFunction] //This executes if registration is successful
         public static void RegisterClass(string key)
@@ -903,8 +904,9 @@ namespace Delivery
 
     public class Package
     {
-        public static string filex86 = @"INSERT B64 HERE";
+        public static string filex86 = @"INSERT x86 B64 HERE";
         public static string filex64 = @"INSERT B64 HERE";
         
-	}
+    }
+  }
 }
